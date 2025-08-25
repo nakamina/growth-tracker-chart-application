@@ -51,9 +51,9 @@ cd nuxt-growth-tracker
 
 ```
  # npm
- npm i nuxt chart.js vue-chartjs
- # または pnpm
- # pnpm add nuxt chart.js vue-chartjs
+ npm install
+
+ # or pnpm install
 ```
 
 ### 3 起動
@@ -63,7 +63,7 @@ cd nuxt-growth-tracker
  # or pnpm dev
 ```
 
-http://localhost:3000 を開きます。
+http://localhost:3000 を開くと画面が表示される
 
 ### 使い方
 
@@ -73,4 +73,4 @@ http://localhost:3000 を開きます。
 
 トグルで 平均スコア と 各項目 の折れ線グラフを切替
 
-翌日の日付にすると、スライダー初期値へ前日の値をコピーした値が入る（前日が無ければ 5）
+翌日の日付にすると、スライダー初期値へ前日の値をコピーした値が入る（前日の入力値がが無ければデフォルトで 5 の値が入る）
