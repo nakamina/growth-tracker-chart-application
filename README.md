@@ -27,6 +27,8 @@
 
 ## スクリーンショット（イメージ）
 
+<img width="1084" height="868" alt="Image" src="https://github.com/user-attachments/assets/99b161b8-b449-4309-adec-803357c16347" />
+
 > 起動後に `http://localhost:3000` を開いてご確認ください。
 
 - 入力フォーム：日付 / 目標 / 4 つのスライダー / GitHub チェック
