@@ -1,6 +1,6 @@
 <template>
     <main class="container">
-      <h1>2ヶ月 成長記録（簡易版）</h1>
+      <h1>2ヶ月 成長記録（簡易版）😺</h1>
   
       <section class="card">
         <h2>今日の入力</h2>
@@ -39,7 +39,7 @@
   
           <div class="row">
             <label>
-              <input type="checkbox" v-model="form.githubCheck" /> GitHub チェック（任意）
+              <input type="checkbox" v-model="form.githubCheck" /> GitHubに草生やす
             </label>
           </div>
   
@@ -60,11 +60,6 @@
           <ItemsChart v-else :records="recentRecords" />
         </div>
       </section>
-      <div class="chart">
-         <AverageChart v-if="!showItems" :records="recentRecords" />
-         <ItemsChart v-else :records="recentRecords" />
-       </div>
-     </section>
  
      <section class="card">
        <h2>履歴</h2>
