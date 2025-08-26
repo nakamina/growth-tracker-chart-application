@@ -75,12 +75,12 @@ http://localhost:3000 を開くと画面が表示される
 
 翌日の日付にすると、スライダー初期値へ前日の値をコピーした値が入る（前日の入力値がが無ければデフォルトで 5 の値が入る）
 
-### DB
+### DBs
 
 - supabase を使用
-  <img width="1084" height="868" alt="Image" src="https://github.com/user-attachments/assets/99b161b8-b449-4309-adec-803357c16347" />
-  - supabase への接続情報を.env へ追加
+  <img width="1629" height="274" alt="Image" src="https://github.com/user-attachments/assets/e11d0224-adfe-4bee-a035-bf33a1f573bf" />
+- supabase への接続情報を.env へ追加
   ```
-  SUPABASE_URL=
+  SUPABASE_URL=s
   SUPABASE_API_KEY=
   ```
