@@ -74,3 +74,13 @@ http://localhost:3000 を開くと画面が表示される
 トグルで 平均スコア と 各項目 の折れ線グラフを切替
 
 翌日の日付にすると、スライダー初期値へ前日の値をコピーした値が入る（前日の入力値がが無ければデフォルトで 5 の値が入る）
+
+### DB
+
+- supabase を使用
+  <img width="1084" height="868" alt="Image" src="https://github.com/user-attachments/assets/99b161b8-b449-4309-adec-803357c16347" />
+  - supabase への接続情報を.env へ追加
+  ```
+  SUPABASE_URL=
+  SUPABASE_API_KEY=
+  ```
