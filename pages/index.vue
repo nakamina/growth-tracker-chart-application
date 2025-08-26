@@ -1,65 +1,69 @@
 <template>
-    <main class="container">
-      <h1>2ヶ月 成長記録（簡易版）😺</h1>
-  
-      <section class="card">
-        <h2>今日の入力</h2>
-        <form @submit.prevent="onSave">
-          <div class="row">
-            <label>日付</label>
-            <input type="date" v-model="form.date" required />
-          </div>
-          <div class="row">
-            <label>今日の目標</label>
-            <input type="text" v-model.trim="form.mainGoal" placeholder="例：8:55出社・朝掃除・PR1本" />
-          </div>
-  
-          <div class="grid">
-            <div class="row">
-              <label>時間厳守: {{ form.timeManagement }}</label>
-              <input type="range" min="0" max="10" step="1" v-model.number="form.timeManagement" />
-              <textarea v-model.trim="form.timeManagementNote" placeholder="メモ（任意）"></textarea>
-            </div>
-            <div class="row">
-              <label>段取り: {{ form.planning }}</label>
-              <input type="range" min="0" max="10" step="1" v-model.number="form.planning" />
-              <textarea v-model.trim="form.planningNote" placeholder="メモ（任意）"></textarea>
-            </div>
-            <div class="row">
-              <label>掃除: {{ form.cleaning }}</label>
-              <input type="range" min="0" max="10" step="1" v-model.number="form.cleaning" />
-              <textarea v-model.trim="form.cleaningNote" placeholder="メモ（任意）"></textarea>
-            </div>
-            <div class="row">
-              <label>自己研鑽: {{ form.selfImprovement }}</label>
-              <input type="range" min="0" max="10" step="1" v-model.number="form.selfImprovement" />
-              <textarea v-model.trim="form.selfImprovementNote" placeholder="メモ（任意）"></textarea>
-            </div>
-          </div>
-  
-          <div class="row">
-            <label>
-              <input type="checkbox" v-model="form.githubCheck" /> GitHubに草生やす
-            </label>
-          </div>
-  
-          <div class="actions">
-            <button type="submit">保存</button>
-            <button type="button" @click="resetToday">今日をリセット</button>
-            <button type="button" @click="clearAll" class="danger">全削除</button>
-          </div>
-        </form>
-      </section>
-  
-      <section class="card">
-        <div class="toolbar">
-          <SwitchToggle v-model="showItems" />
+  <main class="container">
+    <h1>2ヶ月 成長記録（簡易版）😺</h1>
+
+    <section class="card">
+      <h2>今日の入力</h2>
+
+      <!-- 同期状態・エラー表示（任意） -->
+      <p v-if="isSyncing" class="muted">同期中…</p>
+      <p v-if="loadError" class="error">{{ loadError }}</p>
+
+      <form @submit.prevent="onSave">
+        <div class="row">
+          <label>日付</label>
+          <input type="date" v-model="form.date" required />
         </div>
-        <div class="chart">
-          <AverageChart v-if="!showItems" :records="recentRecords" />
-          <ItemsChart v-else :records="recentRecords" />
+        <div class="row">
+          <label>今日の目標</label>
+          <input type="text" v-model.trim="form.mainGoal" placeholder="例：8:55出社・朝掃除・PR1本" />
         </div>
-      </section>
+
+        <div class="grid">
+          <div class="row">
+            <label>時間厳守: {{ form.timeManagement }}</label>
+            <input type="range" min="0" max="10" step="1" v-model.number="form.timeManagement" />
+            <textarea v-model.trim="form.timeManagementNote" placeholder="メモ（任意）"></textarea>
+          </div>
+          <div class="row">
+            <label>段取り: {{ form.planning }}</label>
+            <input type="range" min="0" max="10" step="1" v-model.number="form.planning" />
+            <textarea v-model.trim="form.planningNote" placeholder="メモ（任意）"></textarea>
+          </div>
+          <div class="row">
+            <label>掃除: {{ form.cleaning }}</label>
+            <input type="range" min="0" max="10" step="1" v-model.number="form.cleaning" />
+            <textarea v-model.trim="form.cleaningNote" placeholder="メモ（任意）"></textarea>
+          </div>
+          <div class="row">
+            <label>自己研鑽: {{ form.selfImprovement }}</label>
+            <input type="range" min="0" max="10" step="1" v-model.number="form.selfImprovement" />
+            <textarea v-model.trim="form.selfImprovementNote" placeholder="メモ（任意）"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>
+            <input type="checkbox" v-model="form.githubCheck" /> GitHubに草生やす
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit">保存</button>
+          <button type="button" @click="resetToday">今日をリセット</button>
+          <button type="button" @click="clearAll">全削除</button>
+        </div>
+      </form>
+    </section>
+    <section class="card">
+       <div class="toolbar">
+         <SwitchToggle v-model="showItems" />
+       </div>
+       <div class="chart">
+         <AverageChart v-if="!showItems" :records="recentRecords" />
+         <ItemsChart v-else :records="recentRecords" />
+       </div>
+     </section>
  
      <section class="card">
        <h2>履歴</h2>
@@ -86,18 +90,49 @@
  </template>
  
  <script setup lang="ts">
- import { computed, reactive, ref, watch } from 'vue';
-import AverageChart from '~/components/AverageChart.vue';
-import ItemsChart from '~/components/ItemsChart.vue';
-import SwitchToggle from '~/components/SwitchToggle.vue';
-import { averageOf, getLastRecord, useRecords, type DailyRecord } from '~/composables/useRecords';
+ import { computed, onMounted, reactive, ref, watch } from 'vue'
+import AverageChart from '~/components/AverageChart.vue'
+import ItemsChart from '~/components/ItemsChart.vue'
+import SwitchToggle from '~/components/SwitchToggle.vue'
+import { useDbRecords } from '~/composables/useDbRecords'
+import { averageOf, getLastRecord, useRecords, type DailyRecord } from '~/composables/useRecords'
+  /** ローカルタイムの YYYY-MM-DD */
+  function toLocalYmd(d = new Date()) {
+   const y = d.getFullYear()
+   const m = String(d.getMonth() + 1).padStart(2, '0')
+   const da = String(d.getDate()).padStart(2, '0')
+   return `${y}-${m}-${da}`
+ }
  
- const { records, upsert, clearAll: _clearAll } = useRecords();
+ const { records, upsert: upsertLocal, clearAll: clearAllLocal } = useRecords()
+ const { fetchAll, upsertOne, clearAll: clearAllDb } = useDbRecords()
  
- const todayISO = new Date().toISOString().slice(0, 10);
+ const isSyncing = ref(false)
+ const loadError = ref<string | null>(null)
+ 
+ onMounted(async () => {
+   // 起動時：DB → state へロード（成功時は localStorage にも反映）
+   try {
+     isSyncing.value = true
+     const db = await fetchAll()
+     if (db.length) {
+       records.value = db
+       // useRecordsのセーブラッパを通さずにlocalStorageへ直接反映
+       if (process.client) {
+         localStorage.setItem('growth-records/v1', JSON.stringify(records.value))
+       }
+     }
+   } catch (e: any) {
+     loadError.value = e?.message ?? 'DBロードに失敗しました（ローカルのみで動作します）'
+   } finally {
+     isSyncing.value = false
+   }
+ })
+ 
+ const todayISO = toLocalYmd()
  
  // 初期値：前日の値をコピー（なければ 5）
- const last = getLastRecord(records.value);
+ const last = getLastRecord(records.value)
  const form = reactive<DailyRecord>({
    date: todayISO,
    mainGoal: '',
@@ -106,62 +141,82 @@ import { averageOf, getLastRecord, useRecords, type DailyRecord } from '~/compos
    cleaning: last ? last.cleaning : 5,
    selfImprovement: last ? last.selfImprovement : 5,
    githubCheck: false,
- });
+ })
  
  // 日付変更時：同日があれば上書き、無ければ前日コピー
  watch(() => form.date, (newDate) => {
-   const existing = records.value.find(r => r.date === newDate);
+   const existing = records.value.find(r => r.date === newDate)
    if (existing) {
-     Object.assign(form, structuredClone(existing));
-     return;
+     Object.assign(form, structuredClone(existing))
+     return
    }
    const prev = [...records.value]
      .filter(r => r.date < newDate)
      .sort((a, b) => a.date.localeCompare(b.date))
-     .at(-1);
+     .at(-1)
    if (prev) {
-     form.timeManagement = prev.timeManagement;
-     form.planning = prev.planning;
-     form.cleaning = prev.cleaning;
-     form.selfImprovement = prev.selfImprovement;
+     form.timeManagement = prev.timeManagement
+     form.planning = prev.planning
+     form.cleaning = prev.cleaning
+     form.selfImprovement = prev.selfImprovement
    } else {
-     form.timeManagement = 5;
-     form.planning = 5;
-     form.cleaning = 5;
-     form.selfImprovement = 5;
+     form.timeManagement = 5
+     form.planning = 5
+     form.cleaning = 5
+     form.selfImprovement = 5
    }
-   form.mainGoal = '';
-   form.githubCheck = false;
- });
- 
- function onSave() {
-   upsert(structuredClone(form));
-   alert('保存しました（グラフ更新済み）');
+   form.mainGoal = ''
+   form.githubCheck = false
+ })
+ async function onSave() {
+   // 1) まずローカルへ反映（オフラインでも使える）
+   console.log('onSave', form)
+   console.log('テスト')
+   upsertLocal(structuredClone(form))
+   // 2) DBへ同期（失敗してもUIは継続）
+   try {
+     isSyncing.value = true
+     await upsertOne(structuredClone(form))
+     alert('保存しました（DB・グラフ更新済み）')
+   } catch (e) {
+     alert('DB保存に失敗しました。ローカルには保存済みです。')
+     console.error(e)
+   } finally {
+     isSyncing.value = false
+   }
  }
  
  function resetToday() {
-   form.mainGoal = '';
-   const lastRec = getLastRecord(records.value);
-   form.timeManagement = lastRec ? lastRec.timeManagement : 5;
-   form.planning = lastRec ? lastRec.planning : 5;
-   form.cleaning = lastRec ? lastRec.cleaning : 5;
-   form.selfImprovement = lastRec ? lastRec.selfImprovement : 5;
-   form.githubCheck = false;
+   form.mainGoal = ''
+   const lastRec = getLastRecord(records.value)
+   form.timeManagement = lastRec ? lastRec.timeManagement : 5
+   form.planning = lastRec ? lastRec.planning : 5
+   form.cleaning = lastRec ? lastRec.cleaning : 5
+   form.selfImprovement = lastRec ? lastRec.selfImprovement : 5
+   form.githubCheck = false
  }
  
- function clearAll() {
-   if (confirm('全削除します。よろしいですか？')) _clearAll();
+ async function clearAll() {
+   if (!confirm('全削除します。よろしいですか？')) return
+   // 先にローカルをクリア
+   clearAllLocal()
+   // DB削除はベストエフォート
+   try {
+     await clearAllDb()
+   } catch (e) {
+     console.warn('DB削除に失敗：ローカルのみ削除済み', e)
+   }
  }
  
  // 直近60日だけグラフ表示（保存は全期間）
  const recentRecords = computed(() => {
-   const cutoff = new Date();
-   cutoff.setDate(cutoff.getDate() - 60);
-   const cutoffISO = cutoff.toISOString().slice(0,10);
-   return records.value.filter(r => r.date >= cutoffISO);
- });
+   const cutoff = new Date()
+   cutoff.setDate(cutoff.getDate() - 60)
+   const cutoffYmd = toLocalYmd(cutoff)
+   return records.value.filter(r => r.date >= cutoffYmd)
+ })
  
- const showItems = ref(false); // false: 平均, true: 各項目
+ const showItems = ref(false) // false: 平均, true: 各項目
  </script>
  <style scoped>
  .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
@@ -173,9 +228,14 @@ import { averageOf, getLastRecord, useRecords, type DailyRecord } from '~/compos
  input[type="range"] { width: 100%; }
  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
  button { padding: 8px 12px; border: none; border-radius: 8px; background: #6366f1; color: white; cursor: pointer; }
+ button:hover { filter: brightness(1.05); }
+ button:active { transform: translateY(1px); }
  button.danger { background: #ef4444; }
  .toolbar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
  .chart { height: 320px; }
  .table { width: 100%; border-collapse: collapse; }
  .table th, .table td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; }
- </style> 
+ .muted { font-size: 12px; opacity: .7; margin: 4px 0 8px; }
+ .error { color: #ef4444; font-size: 12px; margin: 4px 0 8px; }
+ </style>
+ 
