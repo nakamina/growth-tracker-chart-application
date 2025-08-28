@@ -81,6 +81,6 @@ http://localhost:3000 を開くと画面が表示される
   <img width="1629" height="274" alt="Image" src="https://github.com/user-attachments/assets/e11d0224-adfe-4bee-a035-bf33a1f573bf" />
 - supabase への接続情報を.env へ追加
   ```
-  SUPABASE_URL=s
+  SUPABASE_URL=
   SUPABASE_API_KEY=
   ```
