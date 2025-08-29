@@ -18,6 +18,7 @@
  
    // 同日があれば上書き（UPSERT）
    const upsertOne = async (r: DailyRecord) => {
+    console.log('test')
      const { error } = await $supabase
        .from(TABLE)
        .upsert(r, { onConflict: 'date' })
