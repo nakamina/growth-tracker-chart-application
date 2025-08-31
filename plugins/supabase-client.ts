@@ -4,8 +4,8 @@
  export default defineNuxtPlugin(() => {
    const config = useRuntimeConfig()
    const supabase: SupabaseClient = createClient(
-     config.public.supabaseUrl!,
-     config.public.supabaseAnonKey!
+     config.public.supabaseUrl,
+     config.public.supabaseAnonKey
    )
    return { provide: { supabase } }
  })
