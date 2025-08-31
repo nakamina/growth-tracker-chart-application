@@ -84,3 +84,12 @@ http://localhost:3000 を開くと画面が表示される
   SUPABASE_URL=
   SUPABASE_API_KEY=
   ```
+
+### 残課題
+
+- CI の追加
+  - format
+  - lint
+  - テスト
+- 認証・認可機能の追加
+  - 第 3 者がアプリを使用可能
