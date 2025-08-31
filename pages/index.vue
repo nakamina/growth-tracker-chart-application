@@ -170,18 +170,13 @@ import { averageOf, getLastRecord, useRecords, type DailyRecord } from '~/compos
  })
  async function onSave() {
    // 1) まずローカルへ反映（オフラインでも使える）
-   console.log('onSave', form)
-   console.log('テスト')
    const formData = { ...form }
-   console.log('formData', formData)
    upsertLocal(formData)
-   console.log('upsertLocal', formData)
    // 2) DBへ同期（失敗してもUIは継続）
    try {
      isSyncing.value = true
-     console.log('upsertOne', formData)
      await upsertOne(formData)
-     alert('保存しました（DB・グラフ更新済み）')
+     alert('DB保存しました')
    } catch (e) {
      alert('DB保存に失敗しました。ローカルには保存済みです。')
      console.error(e)
