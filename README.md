@@ -88,8 +88,12 @@ http://localhost:3000 を開くと画面が表示される
 ### 残課題
 
 - CI の追加
+  - 参考文献 : https://zenn.dev/sa_m/articles/28c32a5f24264b
+    - 一旦簡単な CI 作る
   - format
   - lint
   - テスト
 - 認証・認可機能の追加
   - 第 3 者がアプリを使用可能
+  - 認証 : Firebase
+    - 参考文献 : https://zenn.dev/cloud_ace/articles/firebase-auth-guide
